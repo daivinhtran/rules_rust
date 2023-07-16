@@ -44,5 +44,6 @@ cc_import(
 
 cc_shared_library(
     name = "native_matrix_shared",
+    shared_lib_name = "libnative_matrix_shared.so",
     deps = [":native_matrix"],
 )
