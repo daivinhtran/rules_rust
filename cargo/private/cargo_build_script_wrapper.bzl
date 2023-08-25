@@ -10,6 +10,10 @@ load("//rust:defs.bzl", "rust_binary")
 
 def cargo_build_script(
         name,
+        edition = None,
+        crate_name = None,
+        crate_root = None,
+        srcs = [],
         crate_features = [],
         version = None,
         deps = [],
@@ -85,6 +89,8 @@ def cargo_build_script(
     Args:
         name (str): The name for the underlying rule. This should be the name of the package
             being compiled, optionally with a suffix of `_build_script`.
+        edition (str): The rust edition to use for the internal binary crate.
+        srcs (list of label): Souce files of the crate to build. Passing source files here can be used to trigger rebuilds when changes are made.
         crate_features (list, optional): A list of features to enable for the build script.
         version (str, optional): The semantic version (semver) of the crate.
         deps (list, optional): The build-dependencies of the crate.
@@ -122,31 +128,19 @@ def cargo_build_script(
     binary_tags = [tag for tag in tags or []]
     if "manual" not in binary_tags:
         binary_tags.append("manual")
-    build_script_kwargs = {}
-    binary_kwargs = kwargs
-    if "compatible_with" in kwargs:
-        build_script_kwargs["compatible_with"] = kwargs["compatible_with"]
-        binary_kwargs.pop("compatible_with")
-
-    if "target_compatible_with" in kwargs:
-        build_script_kwargs["target_compatible_with"] = kwargs["target_compatible_with"]
-
-    if "toolchains" in kwargs:
-        build_script_kwargs["toolchains"] = kwargs["toolchains"]
-
-    if "features" in kwargs:
-        build_script_kwargs["features"] = kwargs["features"]
 
     rust_binary(
         name = name + "_",
+        crate_name = crate_name,
+        srcs = srcs,
+        crate_root = crate_root,
         crate_features = crate_features,
-        version = version,
         deps = deps,
         data = data,
         rustc_env = rustc_env,
         rustc_flags = rustc_flags,
+        edition = edition,
         tags = binary_tags,
-        **binary_kwargs
     )
     _build_script_run(
         name = name,
@@ -163,5 +157,5 @@ def cargo_build_script(
         rustc_flags = rustc_flags,
         visibility = visibility,
         tags = tags,
-        **build_script_kwargs
+        **kwargs
     )
