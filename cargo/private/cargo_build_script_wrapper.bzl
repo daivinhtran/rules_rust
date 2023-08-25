@@ -128,6 +128,9 @@ def cargo_build_script(
         build_script_kwargs["compatible_with"] = kwargs["compatible_with"]
         binary_kwargs.pop("compatible_with")
 
+    if "target_compatible_with" in kwargs:
+        build_script_kwargs["target_compatible_with"] = kwargs["target_compatible_with"]
+
     if "toolchains" in kwargs:
         build_script_kwargs["toolchains"] = kwargs["toolchains"]
 
