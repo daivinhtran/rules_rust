@@ -64,8 +64,9 @@ A rule for generating variables for dependent `cargo_build_script`s without a bu
 ## cargo_build_script
 
 <pre>
-cargo_build_script(<a href="#cargo_build_script-name">name</a>, <a href="#cargo_build_script-crate_features">crate_features</a>, <a href="#cargo_build_script-version">version</a>, <a href="#cargo_build_script-deps">deps</a>, <a href="#cargo_build_script-link_deps">link_deps</a>, <a href="#cargo_build_script-build_script_env">build_script_env</a>, <a href="#cargo_build_script-data">data</a>, <a href="#cargo_build_script-tools">tools</a>,
-                   <a href="#cargo_build_script-links">links</a>, <a href="#cargo_build_script-rundir">rundir</a>, <a href="#cargo_build_script-rustc_env">rustc_env</a>, <a href="#cargo_build_script-rustc_flags">rustc_flags</a>, <a href="#cargo_build_script-visibility">visibility</a>, <a href="#cargo_build_script-tags">tags</a>, <a href="#cargo_build_script-kwargs">kwargs</a>)
+cargo_build_script(<a href="#cargo_build_script-name">name</a>, <a href="#cargo_build_script-edition">edition</a>, <a href="#cargo_build_script-crate_name">crate_name</a>, <a href="#cargo_build_script-crate_root">crate_root</a>, <a href="#cargo_build_script-srcs">srcs</a>, <a href="#cargo_build_script-crate_features">crate_features</a>, <a href="#cargo_build_script-version">version</a>, <a href="#cargo_build_script-deps">deps</a>,
+                   <a href="#cargo_build_script-link_deps">link_deps</a>, <a href="#cargo_build_script-proc_macro_deps">proc_macro_deps</a>, <a href="#cargo_build_script-build_script_env">build_script_env</a>, <a href="#cargo_build_script-data">data</a>, <a href="#cargo_build_script-tools">tools</a>, <a href="#cargo_build_script-links">links</a>, <a href="#cargo_build_script-rustc_env">rustc_env</a>,
+                   <a href="#cargo_build_script-rustc_flags">rustc_flags</a>, <a href="#cargo_build_script-visibility">visibility</a>, <a href="#cargo_build_script-tags">tags</a>, <a href="#cargo_build_script-kwargs">kwargs</a>)
 </pre>
 
 Compile and execute a rust build script to generate build attributes
@@ -132,10 +133,15 @@ The `hello_lib` target will be build with the flags and the environment variable
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="cargo_build_script-name"></a>name |  The name for the underlying rule. This should be the name of the package being compiled, optionally with a suffix of <code>_build_script</code>.   |  none |
+| <a id="cargo_build_script-edition"></a>edition |  The rust edition to use for the internal binary crate.   |  `None` |
+| <a id="cargo_build_script-crate_name"></a>crate_name |  Crate name to use for build script.   |  `None` |
+| <a id="cargo_build_script-crate_root"></a>crate_root |  The file that will be passed to rustc to be used for building this crate.   |  `None` |
+| <a id="cargo_build_script-srcs"></a>srcs |  Souce files of the crate to build. Passing source files here can be used to trigger rebuilds when changes are made.   |  `[]` |
 | <a id="cargo_build_script-crate_features"></a>crate_features |  A list of features to enable for the build script.   |  `[]` |
 | <a id="cargo_build_script-version"></a>version |  The semantic version (semver) of the crate.   |  `None` |
 | <a id="cargo_build_script-deps"></a>deps |  The build-dependencies of the crate.   |  `[]` |
 | <a id="cargo_build_script-link_deps"></a>link_deps |  The subset of the (normal) dependencies of the crate that have the links attribute and therefore provide environment variables to this build script.   |  `[]` |
+| <a id="cargo_build_script-proc_macro_deps"></a>proc_macro_deps |  List of rust_proc_macro targets used to build the script.   |  `[]` |
 | <a id="cargo_build_script-build_script_env"></a>build_script_env |  Environment variables for build scripts.   |  `{}` |
 | <a id="cargo_build_script-data"></a>data |  Files needed by the build script.   |  `[]` |
 | <a id="cargo_build_script-tools"></a>tools |  Tools (executables) needed by the build script.   |  `[]` |
