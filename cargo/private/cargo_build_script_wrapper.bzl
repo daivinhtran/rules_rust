@@ -91,12 +91,15 @@ def cargo_build_script(
         name (str): The name for the underlying rule. This should be the name of the package
             being compiled, optionally with a suffix of `_build_script`.
         edition (str): The rust edition to use for the internal binary crate.
+        crate_name (str): Crate name to use for build script.
+        crate_root (label): The file that will be passed to rustc to be used for building this crate.
         srcs (list of label): Souce files of the crate to build. Passing source files here can be used to trigger rebuilds when changes are made.
         crate_features (list, optional): A list of features to enable for the build script.
         version (str, optional): The semantic version (semver) of the crate.
         deps (list, optional): The build-dependencies of the crate.
         link_deps (list, optional): The subset of the (normal) dependencies of the crate that have the
             links attribute and therefore provide environment variables to this build script.
+        proc_macro_deps (list of label, optional): List of rust_proc_macro targets used to build the script.
         build_script_env (dict, optional): Environment variables for build scripts.
         data (list, optional): Files needed by the build script.
         tools (list, optional): Tools (executables) needed by the build script.
