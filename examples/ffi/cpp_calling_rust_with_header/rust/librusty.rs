@@ -2,6 +2,6 @@
 
 #[no_mangle]
 /// Print "Hello Rust!"
-pub extern fn print_c_hello_rust() {
+pub extern "C" fn print_c_hello_rust() {
     println!("Hello Rust!");
 }
