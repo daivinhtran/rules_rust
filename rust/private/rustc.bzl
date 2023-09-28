@@ -1474,6 +1474,25 @@ def _collect_nonstatic_linker_inputs(cc_info):
             ))
     return shared_linker_inputs
 
+# get_includes_paths expects a rule context, a list of directories, and
+# whether the directories are package-relative and returns a list of exec
+# root-relative paths. This handles the need to search for files both in the
+# source tree and generated files.
+def _get_includes_paths(ctx, dirs, package_relative = True):
+    execution_relative_dirs = []
+    for rel_dir in dirs:
+        if rel_dir == ".":
+            rel_dir = ""
+        execution_rel_dir = rel_dir
+        if package_relative:
+            execution_rel_dir = ctx.label.package
+            if len(rel_dir) > 0:
+                execution_rel_dir = execution_rel_dir + "/" + rel_dir
+
+        execution_relative_dirs.append(execution_rel_dir)
+
+    return execution_relative_dirs
+
 def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_configuration, interface_library):
     """If the produced crate is suitable yield a CcInfo to allow for interop with cc rules
 
@@ -1548,8 +1567,15 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
         linker_inputs = depset([link_input]),
     )
 
+    compilation_context = None
+    if hasattr(ctx.attr, "hdrs") and hasattr(ctx.attr, "includes"):
+        compilation_context = cc_common.create_compilation_context(
+            headers = depset(ctx.files.hdrs),
+            includes = depset(_get_includes_paths(ctx, ctx.attr.includes, True)),
+        )
+
     cc_infos = [
-        CcInfo(linking_context = linking_context),
+        CcInfo(linking_context = linking_context, compilation_context = compilation_context),
         toolchain.stdlib_linkflags,
     ]
 
