@@ -11,7 +11,7 @@ rust_static_library(
 cc_import(
     name = "librusty_for_cc",
     hdrs = ["rusty.h"],
-    static_library = ":librusty",
     includes = [package_name()],
+    static_library = ":librusty",
     visibility = ["//visibility:public"],
 )
