@@ -1476,8 +1476,7 @@ def _collect_nonstatic_linker_inputs(cc_info):
 
 # get_includes_paths expects a rule context, a list of directories, and
 # whether the directories are package-relative and returns a list of exec
-# root-relative paths. This handles the need to search for files both in the
-# source tree and generated files.
+# root-relative paths.
 def _get_includes_paths(ctx, dirs, package_relative = True):
     execution_relative_dirs = []
     for rel_dir in dirs:
