@@ -931,20 +931,7 @@ rust_library = rule(
 
 rust_static_library = rule(
     implementation = _rust_static_library_impl,
-    attrs = dict(
-        _common_attrs.items() + {
-            "hdrs": attr.label_list(
-                allow_files = True,
-                doc = (
-                    "The list of header files published by this library to be " +
-                    "directly included by sources in dependent cc rules."
-                ),
-            ),
-            "includes": attr.string_list(
-                doc = "The list of include dirs to headers to be added to cc compiling.",
-            ),
-        }.items(),
-    ),
+    attrs = dict(_common_attrs.items()),
     fragments = ["cpp"],
     host_fragments = ["cpp"],
     toolchains = [
