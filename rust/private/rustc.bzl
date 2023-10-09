@@ -37,7 +37,6 @@ load(
     "is_exec_configuration",
     "make_static_lib_symlink",
     "relativize",
-    "create_crate_info_dict",
 )
 
 BuildInfo = _BuildInfo
@@ -1086,12 +1085,8 @@ def rustc_compile_action(
         attr,
         toolchain,
         rust_flags = [],
-        crate_type = None,
-        crate_info = None,
         output_hash = None,
         force_all_deps_direct = False,
-        rust_metadata = None,
-        output_file = None,
         crate_info_dict = None,
         skip_expanding_rustc_env = False):
     """Create and run a rustc compile action based on the current rule's attributes
@@ -1115,26 +1110,14 @@ def rustc_compile_action(
             - (DepInfo): The transitive dependencies of this crate.
             - (DefaultInfo): The output file for this crate, and its runfiles.
     """
+
     # TODO: Remove create_crate_info_callback after all rustc_compile_action callers migrate to
     # removing CrateInfo construction before `rust_compile_action
+    crate_info = rust_common.create_crate_info(**crate_info_dict)
 
-    # if crate_info == None:
-    #     print(crate_info_dict)
-
-    if crate_info == None:
-        if crate_info_dict:
-            crate_info = rust_common.create_crate_info(**crate_info_dict)
-        else:
-            crate_info_dict = create_crate_info_dict(
-                ctx = ctx,
-                toolchain = toolchain,
-                crate_type = crate_type,
-                rust_metadata = rust_metadata,
-                output_file = output_file,
-            )
-            crate_info = rust_common.create_crate_info(**crate_info_dict)
-
-    build_metadata = getattr(crate_info, "metadata", None)
+    build_metadata = None
+    if "metadata" in crate_info_dict:
+        build_metadata = crate_info_dict["metadata"]
 
     cc_toolchain, feature_configuration = find_cc_toolchain(ctx)
 
@@ -1152,9 +1135,9 @@ def rustc_compile_action(
             experimental_use_cc_common_link = toolchain._experimental_use_cc_common_link
 
     dep_info, build_info, linkstamps = collect_deps(
-        deps = crate_info.deps,
-        proc_macro_deps = crate_info.proc_macro_deps,
-        aliases = crate_info.aliases,
+        deps = crate_info_dict["deps"],
+        proc_macro_deps = crate_info_dict["proc_macro_deps"],
+        aliases = crate_info_dict["aliases"],
         are_linkstamps_supported = _are_linkstamps_supported(
             feature_configuration = feature_configuration,
             has_grep_includes = hasattr(ctx.attr, "_use_grep_includes"),
