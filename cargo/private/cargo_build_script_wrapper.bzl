@@ -114,6 +114,8 @@ def cargo_build_script(
         rustc_flags (list, optional): List of compiler flags passed to `rustc`.
         visibility (list of label, optional): Visibility to apply to the generated build script output.
         tags: (list of str, optional): Tags to apply to the generated build script output.
+        aliases (dict, optional): Remap crates to a new name or moniker for linkage to this target. \
+            These are other `rust_library` targets and will be presented as the new name given.
         **kwargs: Forwards to the underlying `rust_binary` rule. An exception is the `compatible_with`
             attribute, which shouldn't be forwarded to the `rust_binary`, as the `rust_binary` is only
             built and used in `exec` mode. We propagate the `compatible_with` attribute to the `_build_scirpt_run`
