@@ -30,7 +30,11 @@ load(
     "get_import_macro_deps",
     "transform_deps",
     "transform_sources",
+    "determine_lib_name",
+    "can_build_metadata",
 )
+load("@bazel_skylib//lib:paths.bzl", "paths")
+
 # TODO(marco): Separate each rule into its own file.
 
 def _assert_no_deprecated_attributes(_ctx):
@@ -140,6 +144,9 @@ def _rust_library_common(ctx, crate_type):
 
     toolchain = find_toolchain(ctx)
 
+    crate_name = compute_crate_name(ctx.workspace_name, ctx.label, toolchain, ctx.attr.crate_name)
+
+
     crate_root = getattr(ctx.file, "crate_root", None)
     if not crate_root:
         crate_root = crate_root_src(ctx.attr.name, ctx.files.srcs, crate_type)
@@ -155,6 +162,20 @@ def _rust_library_common(ctx, crate_type):
     else:
         output_hash = determine_output_hash(crate_root, ctx.label)
 
+    rust_lib_name = determine_lib_name(
+        crate_name,
+        crate_type,
+        toolchain,
+        output_hash,
+    )
+    rust_lib = ctx.actions.declare_file(rust_lib_name)
+    rust_metadata = None
+    if can_build_metadata(toolchain, ctx, crate_type) and not ctx.attr.disable_pipelining:
+        rust_metadata = ctx.actions.declare_file(
+            paths.replace_extension(rust_lib_name, ".rmeta"),
+            sibling = rust_lib,
+        )
+
     return rustc_compile_action(
         ctx = ctx,
         attr = ctx.attr,
@@ -162,6 +183,8 @@ def _rust_library_common(ctx, crate_type):
         output_hash = output_hash,
         crate_type = crate_type,
         create_crate_info_callback = create_crate_info_dict,
+        rust_metadata = rust_metadata,
+        output_file = rust_lib,
     )
 
 def _rust_binary_impl(ctx):
@@ -174,41 +197,17 @@ def _rust_binary_impl(ctx):
         list: A list of providers. See `rustc_compile_action`
     """
     toolchain = find_toolchain(ctx)
-    crate_name = compute_crate_name(ctx.workspace_name, ctx.label, toolchain, ctx.attr.crate_name)
     _assert_correct_dep_mapping(ctx)
 
     output = ctx.actions.declare_file(ctx.label.name + toolchain.binary_ext)
-
-    deps = transform_deps(ctx.attr.deps)
-    proc_macro_deps = transform_deps(ctx.attr.proc_macro_deps + get_import_macro_deps(ctx))
-
-    crate_root = getattr(ctx.file, "crate_root", None)
-    if not crate_root:
-        crate_root = crate_root_src(ctx.attr.name, ctx.files.srcs, ctx.attr.crate_type)
-    srcs, crate_root = transform_sources(ctx, ctx.files.srcs, crate_root)
 
     return rustc_compile_action(
         ctx = ctx,
         attr = ctx.attr,
         toolchain = toolchain,
-        crate_info = rust_common.create_crate_info(
-            name = crate_name,
-            type = ctx.attr.crate_type,
-            root = crate_root,
-            srcs = depset(srcs),
-            deps = depset(deps),
-            proc_macro_deps = depset(proc_macro_deps),
-            aliases = ctx.attr.aliases,
-            output = output,
-            edition = get_edition(ctx.attr, toolchain, ctx.label),
-            _rustc_env_attr = ctx.attr.rustc_env,
-            rustc_env = ctx.attr.rustc_env,
-            rustc_env_files = ctx.files.rustc_env_files,
-            is_test = False,
-            compile_data = depset(ctx.files.compile_data),
-            compile_data_targets = depset(ctx.attr.compile_data),
-            owner = ctx.label,
-        ),
+        crate_type = ctx.attr.crate_type,
+        create_crate_info_callback = create_crate_info_dict,
+        output_file = output,
     )
 
 def _rust_test_impl(ctx):

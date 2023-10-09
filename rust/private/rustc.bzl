@@ -1089,9 +1089,12 @@ def rustc_compile_action(
         crate_info = None,
         output_hash = None,
         force_all_deps_direct = False,
+        rust_metadata = None,
+        output_file = None,
         # TODO: Remove create_crate_info_callback and skip_expanding_rustc_env attributes
         # after all CrateInfo structs are constructed in rustc_compile_action
         create_crate_info_callback = None,
+        crate_info_dict = None,
         skip_expanding_rustc_env = False):
     """Create and run a rustc compile action based on the current rule's attributes
 
@@ -1126,6 +1129,8 @@ def rustc_compile_action(
             toolchain = toolchain,
             crate_type = crate_type,
             output_hash = output_hash,
+            rust_metadata = rust_metadata,
+            output_file = output_file,
         )
 
     if crate_info_dict != None:

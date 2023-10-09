@@ -727,7 +727,7 @@ def _shortest_src_with_basename(srcs, basename):
                 shortest = f
     return shortest
 
-def _determine_lib_name(name, crate_type, toolchain, lib_hash = None):
+def determine_lib_name(name, crate_type, toolchain, lib_hash = None):
     """See https://github.com/bazelbuild/rules_rust/issues/405
 
     Args:
@@ -850,7 +850,7 @@ def _symlink_for_non_generated_source(ctx, src_file, package_root):
     else:
         return src_file
 
-def create_crate_info_dict(ctx, toolchain, crate_type, output_hash):
+def create_crate_info_dict(ctx, toolchain, crate_type, output_hash, rust_metadata, output_file):
     """Creates a mutable dict() representing CrateInfo provider
 
     create_crate_info_dict is a *temporary* solution until create_crate_info is completely moved into
@@ -875,19 +875,6 @@ def create_crate_info_dict(ctx, toolchain, crate_type, output_hash):
 
     deps = transform_deps(ctx.attr.deps)
     proc_macro_deps = transform_deps(ctx.attr.proc_macro_deps + get_import_macro_deps(ctx))
-    rust_lib_name = _determine_lib_name(
-        crate_name,
-        crate_type,
-        toolchain,
-        output_hash,
-    )
-    rust_lib = ctx.actions.declare_file(rust_lib_name)
-    rust_metadata = None
-    if can_build_metadata(toolchain, ctx, crate_type) and not ctx.attr.disable_pipelining:
-        rust_metadata = ctx.actions.declare_file(
-            paths.replace_extension(rust_lib_name, ".rmeta"),
-            sibling = rust_lib,
-        )
 
     return dict(
         name = crate_name,
@@ -897,7 +884,7 @@ def create_crate_info_dict(ctx, toolchain, crate_type, output_hash):
         deps = depset(deps),
         proc_macro_deps = depset(proc_macro_deps),
         aliases = ctx.attr.aliases,
-        output = rust_lib,
+        output = output_file,
         metadata = rust_metadata,
         edition = get_edition(ctx.attr, toolchain, ctx.label),
         rustc_env = ctx.attr.rustc_env,
