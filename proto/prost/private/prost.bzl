@@ -9,7 +9,6 @@ load("//rust/private:rustc.bzl", "rustc_compile_action")
 # buildifier: disable=bzl-visibility
 load("//rust/private:utils.bzl", "can_build_metadata")
 
-# TODO: Investigate whether this is specific to prost or we can use `get_edition` utility
 RUST_EDITION = "2021"
 
 TOOLCHAIN_TYPE = "@rules_rust//proto/prost:toolchain_type"
@@ -161,11 +160,25 @@ def _compile_rust(ctx, attr, crate_name, src, deps, edition):
         ctx = ctx,
         attr = attr,
         toolchain = toolchain,
+        crate_info = rust_common.create_crate_info(
+            name = crate_name,
+            type = "rlib",
+            root = src,
+            srcs = depset([src]),
+            deps = depset(deps),
+            proc_macro_deps = depset([]),
+            aliases = {},
+            output = lib,
+            metadata = rmeta,
+            edition = edition,
+            is_test = False,
+            rustc_env = {},
+            _rustc_env_attr = {},
+            compile_data = depset([]),
+            compile_data_targets = depset([]),
+            owner = ctx.label,
+        ),
         output_hash = output_hash,
-        crate_type = "rlib",
-        rust_metadata = rmeta,
-        output_file = lib,
-        deps = deps,
     )
 
     crate_info = _get_crate_info(providers)

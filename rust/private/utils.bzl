@@ -850,7 +850,7 @@ def _symlink_for_non_generated_source(ctx, src_file, package_root):
     else:
         return src_file
 
-def create_crate_info_dict(ctx, toolchain, crate_type, rust_metadata, output_file, deps):
+def create_crate_info_dict(ctx, toolchain, crate_type, rust_metadata, output_file):
     """Creates a mutable dict() representing CrateInfo provider
 
     create_crate_info_dict is a *temporary* solution until create_crate_info is completely moved into
@@ -873,8 +873,7 @@ def create_crate_info_dict(ctx, toolchain, crate_type, rust_metadata, output_fil
         crate_root = crate_root_src(ctx.attr.name, ctx.files.srcs, crate_type)
     srcs, crate_root = transform_sources(ctx, ctx.files.srcs, crate_root)
 
-    if deps == None:
-        deps = transform_deps(ctx.attr.deps)
+    deps = transform_deps(ctx.attr.deps)
     proc_macro_deps = transform_deps(ctx.attr.proc_macro_deps + get_import_macro_deps(ctx))
 
     return dict(

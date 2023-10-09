@@ -1092,7 +1092,6 @@ def rustc_compile_action(
         force_all_deps_direct = False,
         rust_metadata = None,
         output_file = None,
-        deps = None,
         skip_expanding_rustc_env = False):
     """Create and run a rustc compile action based on the current rule's attributes
 
@@ -1128,7 +1127,6 @@ def rustc_compile_action(
             crate_type = crate_type,
             rust_metadata = rust_metadata,
             output_file = output_file,
-            deps = deps,
         )
 
     if crate_info_dict != None:
