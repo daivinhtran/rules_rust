@@ -37,6 +37,7 @@ load(
     "is_exec_configuration",
     "make_static_lib_symlink",
     "relativize",
+    "create_crate_info_dict",
 )
 
 BuildInfo = _BuildInfo
@@ -1091,10 +1092,6 @@ def rustc_compile_action(
         force_all_deps_direct = False,
         rust_metadata = None,
         output_file = None,
-        # TODO: Remove create_crate_info_callback and skip_expanding_rustc_env attributes
-        # after all CrateInfo structs are constructed in rustc_compile_action
-        create_crate_info_callback = None,
-        crate_info_dict = None,
         skip_expanding_rustc_env = False):
     """Create and run a rustc compile action based on the current rule's attributes
 
@@ -1121,14 +1118,13 @@ def rustc_compile_action(
     # removing CrateInfo construction before `rust_compile_action
 
     crate_info_dict = None
-    if create_crate_info_callback:
-        if ctx == None or toolchain == None or crate_type == None or crate_info != None:
+    if crate_info == None:
+        if ctx == None or toolchain == None or crate_type == None:
             fail("FAIL", ctx, toolchain, crate_type)
-        crate_info_dict = create_crate_info_callback(
+        crate_info_dict = create_crate_info_dict(
             ctx = ctx,
             toolchain = toolchain,
             crate_type = crate_type,
-            output_hash = output_hash,
             rust_metadata = rust_metadata,
             output_file = output_file,
         )

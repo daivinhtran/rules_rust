@@ -182,7 +182,6 @@ def _rust_library_common(ctx, crate_type):
         toolchain = toolchain,
         output_hash = output_hash,
         crate_type = crate_type,
-        create_crate_info_callback = create_crate_info_dict,
         rust_metadata = rust_metadata,
         output_file = rust_lib,
     )
@@ -206,7 +205,6 @@ def _rust_binary_impl(ctx):
         attr = ctx.attr,
         toolchain = toolchain,
         crate_type = ctx.attr.crate_type,
-        create_crate_info_callback = create_crate_info_dict,
         output_file = output,
     )
 
