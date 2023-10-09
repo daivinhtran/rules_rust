@@ -1092,6 +1092,7 @@ def rustc_compile_action(
         force_all_deps_direct = False,
         rust_metadata = None,
         output_file = None,
+        crate_info_dict = None,
         skip_expanding_rustc_env = False):
     """Create and run a rustc compile action based on the current rule's attributes
 
@@ -1117,20 +1118,21 @@ def rustc_compile_action(
     # TODO: Remove create_crate_info_callback after all rustc_compile_action callers migrate to
     # removing CrateInfo construction before `rust_compile_action
 
-    crate_info_dict = None
-    if crate_info == None:
-        if ctx == None or toolchain == None or crate_type == None:
-            fail("FAIL", ctx, toolchain, crate_type)
-        crate_info_dict = create_crate_info_dict(
-            ctx = ctx,
-            toolchain = toolchain,
-            crate_type = crate_type,
-            rust_metadata = rust_metadata,
-            output_file = output_file,
-        )
+    # if crate_info == None:
+    #     print(crate_info_dict)
 
-    if crate_info_dict != None:
-        crate_info = rust_common.create_crate_info(**crate_info_dict)
+    if crate_info == None:
+        if crate_info_dict:
+            crate_info = rust_common.create_crate_info(**crate_info_dict)
+        else:
+            crate_info_dict = create_crate_info_dict(
+                ctx = ctx,
+                toolchain = toolchain,
+                crate_type = crate_type,
+                rust_metadata = rust_metadata,
+                output_file = output_file,
+            )
+            crate_info = rust_common.create_crate_info(**crate_info_dict)
 
     build_metadata = getattr(crate_info, "metadata", None)
 

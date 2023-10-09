@@ -35,7 +35,7 @@ def _with_modified_crate_name_impl(ctx):
         ctx = ctx,
         attr = ctx.attr,
         toolchain = toolchain,
-        crate_info = rust_common.create_crate_info(
+        crate_info_dict = dict(
             name = crate_name,
             type = crate_type,
             root = crate_root,
