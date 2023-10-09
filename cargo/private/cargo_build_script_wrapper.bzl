@@ -28,6 +28,7 @@ def cargo_build_script(
         rustc_flags = [],
         visibility = None,
         tags = None,
+        aliases = None,
         **kwargs):
     """Compile and execute a rust build script to generate build attributes
 
@@ -146,6 +147,7 @@ def cargo_build_script(
         rustc_flags = rustc_flags,
         edition = edition,
         tags = binary_tags,
+        aliases = aliases,
     )
     _build_script_run(
         name = name,
