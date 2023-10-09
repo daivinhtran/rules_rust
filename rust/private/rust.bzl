@@ -200,7 +200,6 @@ def _rust_library_common(ctx, crate_type):
             compile_data = depset(ctx.files.compile_data),
             compile_data_targets = depset(ctx.attr.compile_data),
             owner = ctx.label,
-            # _rustc_env_attr = ctx.attr.rustc_env,
         ),
     )
 
@@ -241,7 +240,6 @@ def _rust_binary_impl(ctx):
             aliases = ctx.attr.aliases,
             output = output,
             edition = get_edition(ctx.attr, toolchain, ctx.label),
-            # _rustc_env_attr = ctx.attr.rustc_env,
             rustc_env = ctx.attr.rustc_env,
             rustc_env_files = ctx.files.rustc_env_files,
             is_test = False,
