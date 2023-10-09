@@ -1118,10 +1118,15 @@ def rustc_compile_action(
     # removing CrateInfo construction before `rust_compile_action
 
     crate_info_dict = None
-    if create_crate_info_callback != None:
+    if create_crate_info_callback:
         if ctx == None or toolchain == None or crate_type == None or crate_info != None:
             fail("FAIL", ctx, toolchain, crate_type)
-        crate_info_dict = create_crate_info_callback(ctx, toolchain, crate_type)
+        crate_info_dict = create_crate_info_callback(
+            ctx = ctx,
+            toolchain = toolchain,
+            crate_type = crate_type,
+            output_hash = output_hash,
+        )
 
     if crate_info_dict != None:
         crate_info = rust_common.create_crate_info(**crate_info_dict)

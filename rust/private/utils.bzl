@@ -850,7 +850,7 @@ def _symlink_for_non_generated_source(ctx, src_file, package_root):
     else:
         return src_file
 
-def create_crate_info_dict(ctx, toolchain, crate_type):
+def create_crate_info_dict(ctx, toolchain, crate_type, output_hash):
     """Creates a mutable dict() representing CrateInfo provider
 
     create_crate_info_dict is a *temporary* solution until create_crate_info is completely moved into
@@ -872,11 +872,6 @@ def create_crate_info_dict(ctx, toolchain, crate_type):
     if not crate_root:
         crate_root = crate_root_src(ctx.attr.name, ctx.files.srcs, crate_type)
     srcs, crate_root = transform_sources(ctx, ctx.files.srcs, crate_root)
-
-    if crate_type in ["cdylib", "staticlib"]:
-        output_hash = None
-    else:
-        output_hash = determine_output_hash(crate_root, ctx.label)
 
     deps = transform_deps(ctx.attr.deps)
     proc_macro_deps = transform_deps(ctx.attr.proc_macro_deps + get_import_macro_deps(ctx))
