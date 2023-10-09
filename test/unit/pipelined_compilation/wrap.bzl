@@ -1,9 +1,6 @@
 """A custom rule that wraps a crate called to_wrap."""
 
 # buildifier: disable=bzl-visibility
-load("//rust/private:common.bzl", "rust_common")
-
-# buildifier: disable=bzl-visibility
 load("//rust/private:providers.bzl", "BuildInfo", "CrateInfo", "DepInfo", "DepVariantInfo")
 
 # buildifier: disable=bzl-visibility

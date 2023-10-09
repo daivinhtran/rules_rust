@@ -1095,13 +1095,11 @@ def rustc_compile_action(
         ctx (ctx): The rule's context object
         attr (struct): Attributes to use for the rust compile action
         toolchain (rust_toolchain): The current `rust_toolchain`
-        crate_type: TODO
-        crate_info (CrateInfo): The CrateInfo provider for the current target.
         output_hash (str, optional): The hashed path of the crate root. Defaults to None.
         rust_flags (list, optional): Additional flags to pass to rustc. Defaults to [].
         force_all_deps_direct (bool, optional): Whether to pass the transitive rlibs with --extern
             to the commandline as opposed to -L.
-        create_crate_info_callback: A callback to construct a mutable dict for constructor CrateInfo
+        crate_info_dict: A mutable dict used to create CrateInfo provider
         skip_expanding_rustc_env (bool, optional): Whether to expand CrateInfo.rustc_env
 
     Returns:
@@ -1110,9 +1108,6 @@ def rustc_compile_action(
             - (DepInfo): The transitive dependencies of this crate.
             - (DefaultInfo): The output file for this crate, and its runfiles.
     """
-
-    # TODO: Remove create_crate_info_callback after all rustc_compile_action callers migrate to
-    # removing CrateInfo construction before `rust_compile_action
     crate_info = rust_common.create_crate_info(**crate_info_dict)
 
     build_metadata = None
