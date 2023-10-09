@@ -65,8 +65,8 @@ A rule for generating variables for dependent `cargo_build_script`s without a bu
 
 <pre>
 cargo_build_script(<a href="#cargo_build_script-name">name</a>, <a href="#cargo_build_script-edition">edition</a>, <a href="#cargo_build_script-crate_name">crate_name</a>, <a href="#cargo_build_script-crate_root">crate_root</a>, <a href="#cargo_build_script-srcs">srcs</a>, <a href="#cargo_build_script-crate_features">crate_features</a>, <a href="#cargo_build_script-version">version</a>, <a href="#cargo_build_script-deps">deps</a>,
-                   <a href="#cargo_build_script-link_deps">link_deps</a>, <a href="#cargo_build_script-proc_macro_deps">proc_macro_deps</a>, <a href="#cargo_build_script-build_script_env">build_script_env</a>, <a href="#cargo_build_script-data">data</a>, <a href="#cargo_build_script-tools">tools</a>, <a href="#cargo_build_script-links">links</a>, <a href="#cargo_build_script-rustc_env">rustc_env</a>,
-                   <a href="#cargo_build_script-rustc_flags">rustc_flags</a>, <a href="#cargo_build_script-visibility">visibility</a>, <a href="#cargo_build_script-tags">tags</a>, <a href="#cargo_build_script-aliases">aliases</a>, <a href="#cargo_build_script-kwargs">kwargs</a>)
+                   <a href="#cargo_build_script-link_deps">link_deps</a>, <a href="#cargo_build_script-proc_macro_deps">proc_macro_deps</a>, <a href="#cargo_build_script-build_script_env">build_script_env</a>, <a href="#cargo_build_script-data">data</a>, <a href="#cargo_build_script-tools">tools</a>, <a href="#cargo_build_script-links">links</a>, <a href="#cargo_build_script-rundir">rundir</a>,
+                   <a href="#cargo_build_script-rustc_env">rustc_env</a>, <a href="#cargo_build_script-rustc_flags">rustc_flags</a>, <a href="#cargo_build_script-visibility">visibility</a>, <a href="#cargo_build_script-tags">tags</a>, <a href="#cargo_build_script-aliases">aliases</a>, <a href="#cargo_build_script-kwargs">kwargs</a>)
 </pre>
 
 Compile and execute a rust build script to generate build attributes
