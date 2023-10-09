@@ -173,7 +173,6 @@ def _compile_rust(ctx, attr, crate_name, src, deps, edition):
             edition = edition,
             is_test = False,
             rustc_env = {},
-            _rustc_env_attr = {},
             compile_data = depset([]),
             compile_data_targets = depset([]),
             owner = ctx.label,
