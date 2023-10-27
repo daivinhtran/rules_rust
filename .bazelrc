@@ -12,10 +12,6 @@ common --enable_platform_specific_config
 startup --windows_enable_symlinks
 build:windows --enable_runfiles
 
-# Shorten output root to avoid maximum path length limitation
-# https://bazel.build/configure/windows#long-path-issues
-startup:windows --output_user_root=C:/tmp
-
 # Enable the only currently supported report type
 # https://bazel.build/reference/command-line-reference#flag--combined_report
 coverage --combined_report=lcov
