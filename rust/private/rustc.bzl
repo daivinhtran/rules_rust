@@ -1265,7 +1265,7 @@ def rustc_compile_action(
             action_outputs.append(dsym_folder)
 
     sysroot_arg = ctx.actions.args()
-    sysroot_arg.add("--sysroot", toolchain.sysroot)
+    sysroot_arg.add(toolchain.sysroot, format = "--sysroot=%s")
 
     if ctx.executable._process_wrapper:
         # Run as normal
@@ -1274,7 +1274,7 @@ def rustc_compile_action(
             inputs = compile_inputs,
             outputs = action_outputs,
             env = env,
-            arguments = [sysroot_arg] + args.all,
+            arguments = [args.process_wrapper_flags, args.rustc_path, sysroot_arg, args.rustc_flags],
             mnemonic = "Rustc",
             progress_message = "Compiling Rust {} {}{} ({} files)".format(
                 crate_info.type,
@@ -1290,7 +1290,7 @@ def rustc_compile_action(
                 inputs = compile_inputs,
                 outputs = [build_metadata],
                 env = env,
-                arguments = [sysroot_arg] + args_metadata.all,
+                arguments = [args_metadata.process_wrapper_flags, args_metadata.rustc_path, sysroot_arg, args_metadata.rustc_flags],
                 mnemonic = "RustcMetadata",
                 progress_message = "Compiling Rust metadata {} {}{} ({} files)".format(
                     crate_info.type,
@@ -1300,16 +1300,16 @@ def rustc_compile_action(
                 ),
                 toolchain = "@rules_rust//rust:toolchain_type",
             )
-    else:
+    elif hasattr(ctx.executable, "_bootstrap_process_wrapper"):
         # Run without process_wrapper
         if build_env_files or build_flags_files or stamp or build_metadata:
             fail("build_env_files, build_flags_files, stamp, build_metadata are not supported when building without process_wrapper")
         ctx.actions.run(
-            executable = toolchain.rustc,
+            executable = ctx.executable._bootstrap_process_wrapper,
             inputs = compile_inputs,
             outputs = action_outputs,
             env = env,
-            arguments = [sysroot_arg, args.rustc_flags],
+            arguments = [args.rustc_path, args.rustc_flags],
             mnemonic = "Rustc",
             progress_message = "Compiling Rust (without process_wrapper) {} {}{} ({} files)".format(
                 crate_info.type,
@@ -1319,6 +1319,8 @@ def rustc_compile_action(
             ),
             toolchain = "@rules_rust//rust:toolchain_type",
         )
+    else:
+        fail("No process wrapper was defined for {}".format(ctx.label))
 
     if experimental_use_cc_common_link:
         # Wrap the main `.o` file into a compilation output suitable for
