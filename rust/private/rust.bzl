@@ -28,7 +28,6 @@ load(
     "determine_output_hash",
     "expand_dict_value_locations",
     "find_toolchain",
-    "force_panic_unwind_transition",
     "get_edition",
     "get_import_macro_deps",
     "transform_deps",
@@ -632,9 +631,6 @@ _common_attrs = {
     "_is_proc_macro_dep_enabled": attr.label(
         default = Label("//:is_proc_macro_dep_enabled"),
     ),
-    "_panic_style": attr.label(
-        default = Label("//:panic_style"),
-    ),
     "_per_crate_rustc_flag": attr.label(
         default = Label("//:experimental_per_crate_rustc_flag"),
     ),
@@ -894,7 +890,6 @@ _proc_macro_dep_transition = transition(
 rust_proc_macro = rule(
     implementation = _rust_proc_macro_impl,
     provides = _common_providers,
-    cfg = force_panic_unwind_transition,
     # Start by copying the common attributes, then override the `deps` attribute
     # to apply `_proc_macro_dep_transition`. To add this transition we additionally
     # need to declare `_allowlist_function_transition`, see
@@ -1111,11 +1106,7 @@ rust_test = rule(
     implementation = _rust_test_impl,
     provides = _common_providers,
     attrs = dict(_common_attrs.items() +
-                 _rust_test_attrs.items() + {
-        "_allowlist_function_transition": attr.label(
-            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-        ),
-    }.items()),
+                 _rust_test_attrs.items()),
     executable = True,
     fragments = ["cpp"],
     host_fragments = ["cpp"],
@@ -1124,7 +1115,6 @@ rust_test = rule(
         str(Label("//rust:toolchain_type")),
         "@bazel_tools//tools/cpp:toolchain_type",
     ],
-    cfg = force_panic_unwind_transition,
     incompatible_use_toolchain_transition = True,
     doc = dedent("""\
         Builds a Rust test crate.
