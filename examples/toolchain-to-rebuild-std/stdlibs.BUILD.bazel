@@ -4,17 +4,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files(["bin/*"])
 
-# Flags for vendored dependencies.
-COMMON_INTERNAL_CRATE_RUSTC_FLAGS = [
-    "--cap-lints=allow",
-    # Mix in some metadata to distinguish the rlibs of these private vendored
-    # crates from the rlibs of their public counterparts over at third_party/rust.
-    "-Cmetadata=rustc_internal",
-    # Ensure standard rust clients can't accidentally pull in the private crates.
-    # See https://rustc-dev-guide.rust-lang.org/building/bootstrapping.html#-z-force-unstable-if-unmarked.
-    "-Zforce-unstable-if-unmarked",
-]
-
 filegroup(
     name = "binaries",
     srcs = glob([
@@ -22,22 +11,6 @@ filegroup(
         "lib/*",
         "lib64/*",
     ]),
-)
-
-platform(
-    name = "aarch64-apple-darwin",
-    constraint_values = [
-        "@platforms//os:osx",
-        "@platforms//cpu:aarch64",
-    ],
-)
-
-platform(
-    name = "wasm32-wasi",
-    constraint_values = [
-        "@platforms//os:wasi",
-        "@platforms//cpu:wasm32",
-    ],
 )
 
 filegroup(

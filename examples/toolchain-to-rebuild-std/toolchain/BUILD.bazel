@@ -14,7 +14,6 @@ rust_stdlib_filegroup(
     srcs = [":sysroot_with_stdlibs"],
 )
 
-# bazel build //toolchain:sysroot_with_stdlibs --platforms=//:aarch64-apple-darwin
 toolchain_sysroot(
     name = "sysroot_with_stdlibs",
     srcs = [":stdlibs"],
