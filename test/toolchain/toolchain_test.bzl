@@ -52,6 +52,7 @@ toolchain_adds_rustc_flags_test = analysistest.make(
     _toolchain_adds_rustc_flags_impl,
     config_settings = {
         str(Label("//:extra_rustc_flags")): [CONFIG_FLAG],
+        str(Label("//rust/settings:experimental_toolchain_generated_sysroot")): True,
     },
 )
 
