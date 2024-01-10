@@ -875,3 +875,11 @@ def generate_output_diagnostics(ctx, sibling, require_process_wrapper = True):
         sibling.basename + ".rustc-output",
         sibling = sibling,
     )
+
+def is_std_dylib(file):
+    """Whether the file is a dylib crate for std
+
+    """
+
+    basename = file.basename
+    return basename.startswith("libstd-") and (basename.endswith(".so") or basename.endswith(".dylib"))

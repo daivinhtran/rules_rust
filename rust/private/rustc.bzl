@@ -38,6 +38,7 @@ load(
     "make_static_lib_symlink",
     "relativize",
 )
+load(":utils.bzl", "is_std_dylib")
 
 BuildInfo = _BuildInfo
 
@@ -1704,6 +1705,13 @@ def _compute_rpaths(toolchain, output_dir, dep_info, use_pic):
         for lib in linker_input.libraries
         if _is_dylib(lib)
     ]
+
+    # Include std dylib if linking std dynamically
+    if toolchain.link_std_dylib:
+        for file in toolchain.rust_std.to_list():
+            if is_std_dylib(file):
+                dylibs.append(file)
+
     if not dylibs:
         return depset([])
 

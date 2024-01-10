@@ -35,6 +35,7 @@ CrateInfo = provider(
         "rustc_output": "File: The output from rustc from producing the output file. It is optional.",
         "rustc_rmeta_output": "File: The rmeta file produced for this crate. It is optional.",
         "srcs": "depset[File]: All source Files that are part of the crate.",
+        "std_dylib": "File: libstd.so file",
         "type": (
             "str: The type of this crate " +
             "(see [rustc --crate-type](https://doc.rust-lang.org/rustc/command-line-arguments.html#--crate-type-a-list-of-types-of-crates-for-the-compiler-to-emit))."
@@ -122,6 +123,7 @@ StdLibInfo = provider(
         "panic_files": "Depset[File]: `.a` files associated with `panic_unwind` and `panic_abort`.",
         "self_contained_files": "List[File]: All `.o` files from the `self-contained` directory.",
         "srcs": "List[Target]: All targets from the original `srcs` attribute.",
+        "std_dylib": "File: libstd.so file",
         "std_files": "Depset[File]: `.a` files associated with the `std` module.",
         "std_rlibs": "List[File]: All `.rlib` files",
         "test_files": "Depset[File]: `.a` files associated with the `test` module.",
