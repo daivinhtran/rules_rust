@@ -459,6 +459,18 @@ def get_linker_and_args(ctx, attr, crate_type, cc_toolchain, feature_configurati
         action_name = action_name,
     )
 
+    # FIXME: ld.lld, the linker registered by nix's cc toolchains, does not
+    # support the `-Xlinker` flag like gcc does.
+    # This is probably a bug in cc_common. `cc_common.get_memory_inefficient_command_line` shouldn't
+    # provide any flag that is not supported by the linker given for the action
+    temp = []
+    if ld.endswith("ld.lld"):
+        for arg in link_args:
+            if arg != "-Xlinker":
+                temp.append(arg)
+
+    link_args = temp
+
     return ld, link_args, link_env
 
 def _process_build_scripts(
@@ -1028,6 +1040,10 @@ def construct_arguments(
     if toolchain.llvm_cov and ctx.configuration.coverage_enabled:
         # https://doc.rust-lang.org/rustc/instrument-coverage.html
         rustc_flags.add("--codegen=instrument-coverage")
+
+    # --codegen=prefer-dynamic
+    if toolchain.link_std_dylib:
+        rustc_flags.add("--codegen=prefer-dynamic")
 
     # Make bin crate data deps available to tests.
     for data in getattr(attr, "data", []):
