@@ -696,7 +696,9 @@ def _rust_toolchain_impl(ctx):
     ]
 
 def _should_link_std_dylib(ctx):
-    return ctx.attr.link_std_dylib[BuildSettingInfo].value and not is_exec_configuration(ctx)
+    return not is_exec_configuration(ctx) and \
+           ctx.attr.link_std_dylib[BuildSettingInfo].value and \
+           ctx.attr.rust_std[rust_common.stdlib_info].std_dylib
 
 rust_toolchain = rule(
     implementation = _rust_toolchain_impl,
