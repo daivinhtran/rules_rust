@@ -199,8 +199,7 @@ def _cdylib_has_native_dep_and_alwayslink_test_impl(ctx):
             ]
     else:
         want = [
-            # FIXME: changes shouldn't impact this test
-            # "-lstatic=native_dep{}".format(pic_suffix),
+            "-lstatic=native_dep{}".format(pic_suffix),
             "link-arg=-Wl,--whole-archive",
             "link-arg=bazel-out/k8-{}/bin/{}test/unit/native_deps/libalwayslink{}.lo".format(compilation_mode, workspace_prefix, pic_suffix),
             "link-arg=-Wl,--no-whole-archive",
