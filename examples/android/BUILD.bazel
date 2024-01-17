@@ -30,11 +30,28 @@ android_library(
     deps = [":jni_shim"],
 )
 
+# It is intentionally mandatory to include `libstd.so` as a dependency to `android_binary`
+# so that when `@rules_rust//rust/setting:std_dylib` is set, all `android_binary`s
+# are not defaulted to including `libstd.so` in the output apk because it will
+# greatly increase the apk size.
+cc_library(
+    name = "libstd_so",
+    srcs = [
+        # TODO: Implement mechanism to filter out libtest.so
+        "@rust_linux_aarch64__aarch64-linux-android__stable_tools//:rust_std-aarch64-linux-android",
+    ]
+)
+
 android_binary(
     name = "android_app",
     custom_package = "com.example.androidapp",
     manifest = "AndroidManifest.xml",
-    deps = [":android_main"],
+    deps = [
+        ":android_main",
+    ] + select({
+        "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
+        "//conditions:default": [],
+    }),
 )
 
 platform(

@@ -248,7 +248,7 @@ def _make_libstd_and_allocator_ccinfo(ctx, rust_std, allocator_library, std = "s
             order = "topological",
         )
 
-        if _should_link_std_dylib(ctx):
+        if _experimental_use_cc_common_link(ctx) and _should_link_std_dylib(ctx):
             # std dylib has everything so that we do not need to include all std_files
             std_inputs = depset(
                 [cc_common.create_library_to_link(
@@ -477,6 +477,9 @@ def _generate_sysroot(
         sysroot_anchor = sysroot_anchor,
     )
 
+def _experimental_use_cc_common_link(ctx):
+    return ctx.attr.experimental_use_cc_common_link[BuildSettingInfo].value
+
 def _rust_toolchain_impl(ctx):
     """The rust_toolchain implementation
 
@@ -500,15 +503,14 @@ def _rust_toolchain_impl(ctx):
     pipelined_compilation = ctx.attr._pipelined_compilation[BuildSettingInfo].value
     no_std = ctx.attr._no_std[BuildSettingInfo].value
 
-    experimental_use_cc_common_link = ctx.attr.experimental_use_cc_common_link[BuildSettingInfo].value
     experimental_use_global_allocator = ctx.attr._experimental_use_global_allocator[BuildSettingInfo].value
-    if experimental_use_cc_common_link:
+    if _experimental_use_cc_common_link(ctx):
         if experimental_use_global_allocator and not ctx.attr.global_allocator_library:
             fail("rust_toolchain.experimental_use_cc_common_link with --@rules_rust//rust/settings:experimental_use_global_allocator " +
                  "requires rust_toolchain.global_allocator_library to be set")
         if not ctx.attr.allocator_library:
             fail("rust_toolchain.experimental_use_cc_common_link requires rust_toolchain.allocator_library to be set")
-    if experimental_use_global_allocator and not experimental_use_cc_common_link:
+    if experimental_use_global_allocator and not _experimental_use_cc_common_link(ctx):
         fail(
             "Using @rules_rust//rust/settings:experimental_use_global_allocator requires" +
             "--@rules_rust//rust/settings:experimental_use_cc_common_link to be set",
@@ -683,7 +685,7 @@ def _rust_toolchain_impl(ctx):
         _rename_first_party_crates = rename_first_party_crates,
         _third_party_dir = third_party_dir,
         _pipelined_compilation = pipelined_compilation,
-        _experimental_use_cc_common_link = experimental_use_cc_common_link,
+        _experimental_use_cc_common_link = _experimental_use_cc_common_link(ctx),
         _experimental_use_global_allocator = experimental_use_global_allocator,
         _experimental_use_coverage_metadata_files = ctx.attr._experimental_use_coverage_metadata_files[BuildSettingInfo].value,
         _experimental_toolchain_generated_sysroot = ctx.attr._experimental_toolchain_generated_sysroot[IncompatibleFlagInfo].enabled,
