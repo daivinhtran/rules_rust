@@ -16,6 +16,7 @@ rust_register_toolchains(
     edition = "2018",
     extra_target_triples = [
         "aarch64-linux-android",
+        "x86_64-linux-android",
     ],
 )
 
