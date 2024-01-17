@@ -23,9 +23,7 @@ BAZEL_LINK_FLAG_SET = flag_set(
             flag_groups = [
                 flag_group(
                     flags = [
-                        "-Xlinker",
                         "-rpath",
-                        "-Xlinker",
                         "$ORIGIN/%{runtime_library_search_directories}",
                     ],
                 ),

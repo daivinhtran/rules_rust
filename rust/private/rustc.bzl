@@ -459,19 +459,6 @@ def get_linker_and_args(ctx, attr, crate_type, cc_toolchain, feature_configurati
         action_name = action_name,
     )
 
-    # Bug: https://github.com/bazelbuild/bazel/issues/20849
-    # ld.lld, the linker registered by nix's cc toolchains, does not
-    # support the `-Xlinker` flag like gcc does.
-    # This is probably a bug in cc_common. `cc_common.get_memory_inefficient_command_line` shouldn't
-    # provide any flag that is not supported by the linker given for the action
-    temp = []
-    if ld.endswith("ld.lld"):
-        for arg in link_args:
-            if arg != "-Xlinker":
-                temp.append(arg)
-
-    link_args = temp
-
     return ld, link_args, link_env
 
 def _process_build_scripts(
