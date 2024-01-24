@@ -93,6 +93,7 @@ def _clippy_aspect_impl(target, ctx):
         aliases = crate_info.aliases,
         # Clippy doesn't need to invoke transitive linking, therefore doesn't need linkstamps.
         are_linkstamps_supported = False,
+        from_clippy = True,
     )
 
     compile_inputs, out_dir, build_env_files, build_flags_files, linkstamp_outs, ambiguous_libs = collect_inputs(

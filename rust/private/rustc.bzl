@@ -195,7 +195,8 @@ def collect_deps(
         deps,
         proc_macro_deps,
         aliases,
-        are_linkstamps_supported = False):
+        are_linkstamps_supported = False,
+        from_clippy = False):
     """Walks through dependencies and collects the transitive dependencies.
 
     Args:
@@ -224,7 +225,15 @@ def collect_deps(
     transitive_metadata_outputs = []
 
     crate_deps = []
+    counter = 0
     for dep in depset(transitive = [deps, proc_macro_deps]).to_list():
+        if from_clippy:
+            # Change limit to 23 to reproduce error with duplicate --sysroot flag
+            if counter == 22:
+                break
+            else:
+                counter += 1
+
         crate_group = None
 
         if type(dep) == "Target" and rust_common.crate_group_info in dep:
