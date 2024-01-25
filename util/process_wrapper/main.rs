@@ -18,9 +18,11 @@ mod output;
 mod rustc;
 mod util;
 
+ use std::env;
 use std::fmt;
 use std::fs::{copy, OpenOptions};
 use std::io;
+
 use std::process::{exit, Command, ExitStatus, Stdio};
 
 use crate::options::options;
@@ -63,6 +65,11 @@ impl std::error::Error for ProcessWrapperError {}
 
 fn main() -> Result<(), ProcessWrapperError> {
     let opts = options().map_err(|e| ProcessWrapperError(e.to_string()))?;
+
+    let mut orig_args: Vec<String> = env::args().collect();
+    
+    println!("{:?}", orig_args);
+    println!("{:?}", opts);
 
     let mut child = Command::new(opts.executable)
         .args(opts.child_arguments)
