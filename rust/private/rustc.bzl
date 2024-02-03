@@ -1150,6 +1150,8 @@ def rustc_compile_action(
             experimental_use_cc_common_link = True
         elif ctx.attr.experimental_use_cc_common_link == -1:
             experimental_use_cc_common_link = toolchain._experimental_use_cc_common_link
+    elif crate_info.crate_type == "proc-macro":
+        experimental_use_cc_common_link = toolchain._experimental_use_cc_common_link
 
     dep_info, build_info, linkstamps = collect_deps(
         deps = crate_info_dict["deps"],
