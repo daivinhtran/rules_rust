@@ -310,18 +310,19 @@ def collect_deps(
                 transitive_link_search_paths.append(dep_info.link_search_path_files)
 
             transitive_build_infos.append(dep_info.transitive_build_infos)
+        elif cc_info or dep_build_info:
+            if cc_info:
+                # This dependency is a cc_library
+                transitive_noncrates.append(cc_info.linking_context.linker_inputs)
 
-        elif cc_info:
-            # This dependency is a cc_library
-            transitive_noncrates.append(cc_info.linking_context.linker_inputs)
-        elif dep_build_info:
-            if build_info:
-                fail("Several deps are providing build information, " +
-                     "only one is allowed in the dependencies")
-            build_info = dep_build_info
-            transitive_build_infos.append(depset([build_info]))
-            if build_info.link_search_paths:
-                transitive_link_search_paths.append(depset([build_info.link_search_paths]))
+            if dep_build_info:
+                if build_info:
+                    fail("Several deps are providing build information, " +
+                         "only one is allowed in the dependencies")
+                build_info = dep_build_info
+                transitive_build_infos.append(depset([build_info]))
+                if build_info.link_search_paths:
+                    transitive_link_search_paths.append(depset([build_info.link_search_paths]))
         else:
             fail("rust targets can only depend on rust_library, rust_*_library or cc_library " +
                  "targets.")
@@ -776,7 +777,6 @@ def collect_inputs(
     if build_env_file:
         build_env_files = [f for f in build_env_files] + [build_env_file]
     compile_inputs = depset(build_env_files, transitive = [compile_inputs])
-
     return compile_inputs, out_dir, build_env_files, build_flags_files, linkstamp_outs, ambiguous_libs
 
 def construct_arguments(
@@ -1018,7 +1018,10 @@ def construct_arguments(
 
             env.update(link_env)
             rustc_flags.add(ld, format = "--codegen=linker=%s")
-            rustc_flags.add_joined("--codegen", link_args, join_with = " ", format_joined = "link-args=%s")
+
+            # Split link args into individual "--codegen=link-arg=" flags to handle nested spaces.
+            # Additional context: https://github.com/rust-lang/rust/pull/36574
+            rustc_flags.add_all(link_args, format_each = "--codegen=link-arg=%s")
 
         _add_native_link_flags(rustc_flags, dep_info, linkstamp_outs, ambiguous_libs, crate_info.type, toolchain, cc_toolchain, feature_configuration, compilation_mode)
 
@@ -1059,7 +1062,8 @@ def construct_arguments(
         ))
 
     # Ensure the sysroot is set for the target platform
-    env["SYSROOT"] = toolchain.sysroot
+    if not toolchain._incompatible_no_rustc_sysroot_env:
+        env["SYSROOT"] = toolchain.sysroot
     if toolchain._experimental_toolchain_generated_sysroot:
         rustc_flags.add(toolchain.sysroot, format = "--sysroot=%s")
 
@@ -1110,7 +1114,8 @@ def rustc_compile_action(
         output_hash = None,
         force_all_deps_direct = False,
         crate_info_dict = None,
-        skip_expanding_rustc_env = False):
+        skip_expanding_rustc_env = False,
+        include_coverage = True):
     """Create and run a rustc compile action based on the current rule's attributes
 
     Args:
@@ -1123,6 +1128,7 @@ def rustc_compile_action(
             to the commandline as opposed to -L.
         crate_info_dict: A mutable dict used to create CrateInfo provider
         skip_expanding_rustc_env (bool, optional): Whether to expand CrateInfo.rustc_env
+        include_coverage (bool, optional): Whether to generate coverage information or not.
 
     Returns:
         list: A list of the following providers:
@@ -1455,11 +1461,19 @@ def rustc_compile_action(
             runfiles = runfiles,
             executable = executable,
         ),
-        coverage_common.instrumented_files_info(
-            ctx,
-            **instrumented_files_kwargs
-        ),
     ]
+
+    # When invoked by aspects (and when running `bazel coverage`), the
+    # baseline_coverage.dat created here will conflict with the baseline_coverage.dat of the
+    # underlying target, which is a build failure. So we add an option to disable it so that this
+    # function can be invoked from aspects for rules that have its own InstrumentedFilesInfo.
+    if include_coverage:
+        providers.append(
+            coverage_common.instrumented_files_info(
+                ctx,
+                **instrumented_files_kwargs
+            ),
+        )
 
     if crate_info_dict != None:
         crate_info_dict.update({
@@ -1658,7 +1672,7 @@ def _create_extra_input_args(build_info, dep_info):
             - (depset[File]): A list of all build info `OUT_DIR` File objects
             - (str): The `OUT_DIR` of the current build info
             - (File): An optional generated environment file from a `cargo_build_script` target
-            - (depset[File]): All direct and transitive build flag files from the current build info.
+            - (depset[File]): All direct and transitive build flag files from the current build info to be passed to rustc.
     """
     input_files = []
     input_depsets = []
@@ -1676,9 +1690,10 @@ def _create_extra_input_args(build_info, dep_info):
         build_env_file = build_info.rustc_env
         if build_info.flags:
             build_flags_files.append(build_info.flags)
-        if build_info.link_flags:
-            build_flags_files.append(build_info.link_flags)
-            input_files.append(build_info.link_flags)
+        if build_info.linker_flags:
+            build_flags_files.append(build_info.linker_flags)
+            input_files.append(build_info.linker_flags)
+
         input_depsets.append(build_info.compile_data)
 
     return (
