@@ -18,35 +18,6 @@ cc_library(
     alwayslink = True,  # Required since JNI symbols appear to be unused
 )
 
-rust_library(
-    name = "rust_lib2",
-    srcs = ["demo2.rs"],
-    edition = "2018",
-)
-
-cc_library(
-    name = "jni_shim2",
-    srcs = ["android_link_hack.c"],  # Required because of https://github.com/bazelbuild/rules_rust/issues/1271
-    linkopts = [
-        "-lm",  # Required to avoid dlopen runtime failures unrelated to rust
-    ],
-    deps = [":rust_lib2"],
-    alwayslink = True,  # Required since JNI symbols appear to be unused
-)
-
-android_library(
-    name = "android_main2",
-    srcs = [
-        "JniShim2.java",
-    ],
-    custom_package = "com.example.androidapp",
-    manifest = "AndroidManifest.xml",
-    resource_files = ["res/layout/android_main.xml"],
-    deps = [
-        ":jni_shim2",
-    ],
-)
-
 android_library(
     name = "android_main",
     srcs = [
@@ -68,8 +39,8 @@ android_library(
 cc_library(
     name = "libstd_so",
     srcs = [
-        # TODO: Implement mechanism to filter out libtest.so
-        "@rust_linux_aarch64__aarch64-linux-android__stable_tools//:rust_std-aarch64-linux-android",
+        # "@rust_linux_aarch64__aarch64-linux-android__stable_tools//:rust_std-aarch64-linux-android",
+        "@rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools//:rust_dylib_std-x86_64-unknown-linux-gnu",
     ],
 )
 
@@ -79,9 +50,9 @@ android_binary(
     manifest = "AndroidManifest.xml",
     deps = [
         ":android_main",
-        ":android_main2",
+        # ":libstd_so",
     ] + select({
-        "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
+        # "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
         "//conditions:default": [],
     }),
 )

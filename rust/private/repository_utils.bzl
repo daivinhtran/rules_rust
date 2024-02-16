@@ -189,6 +189,16 @@ _build_file_for_stdlib_template = """\
 load("@rules_rust//rust:toolchain.bzl", "rust_stdlib_filegroup")
 
 rust_stdlib_filegroup(
+    name = "rust_dylib_std-{target_triple}",
+    srcs = glob(
+        [
+            "lib/rustlib/{target_triple}/lib/libstd*{dylib_ext}",
+        ]
+    ),
+    visibility = ["//visibility:public"],
+)
+
+rust_stdlib_filegroup(
     name = "rust_std-{target_triple}",
     srcs = glob(
         [
