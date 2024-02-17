@@ -3,8 +3,25 @@ common --enable_platform_specific_config
 startup --windows_enable_symlinks
 build:windows --enable_runfiles
 
-build --fat_apk_cpu=arm64-v8a --android_crosstool_top=@androidndk//:toolchain
-
 # TODO: migrate all dependencies from WORKSPACE to MODULE.bazel
 # https://github.com/bazelbuild/rules_rust/issues/2181
 common --noenable_bzlmod
+
+build:android --crosstool_top=//external:android/crosstool
+build:android --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+build:android --android_crosstool_top=@androidndk//:toolchain
+
+build:android_arm64 --config=android
+build:android_arm64 --cpu=arm64
+build:android_arm64 --fat_apk_cpu=arm64-v8a
+build:android_x86_64 --android_platforms=//:arm64-v8a
+
+build:android_x86_64 --config=android
+build:android_x86_64 --cpu=x86_64
+build:android_x86_64 --fat_apk_cpu=x86_64
+build:android_x86_64 --android_platforms=//:x86_64
+
+mobile-install --mode=skylark --mobile_install_aspect=@rules_android//mobile_install:mi.bzl  --mobile_install_supported_rules=android_binary
+mobile-install --tool_java_runtime_version=17
+common  --experimental_google_legacy_api
+common --experimental_enable_android_migration_apis

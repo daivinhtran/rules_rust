@@ -1,4 +1,4 @@
-load("@build_bazel_rules_android//android:rules.bzl", "android_binary", "android_library")
+load("@rules_android//android:rules.bzl", "android_binary", "android_library")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
@@ -27,20 +27,13 @@ android_library(
     custom_package = "com.example.androidapp",
     manifest = "AndroidManifest.xml",
     resource_files = ["res/layout/android_main.xml"],
-    deps = [
-        ":jni_shim",
-    ],
+    deps = [":jni_shim"],
 )
 
-# It is intentionally mandatory to include `libstd.so` as a dependency to `android_binary`
-# so that when `@rules_rust//rust/setting:std_dylib` is set, all `android_binary`s
-# are not defaulted to including `libstd.so` in the output apk because it will
-# greatly increase the apk size.
 cc_library(
     name = "libstd_so",
     srcs = [
-        # "@rust_linux_aarch64__aarch64-linux-android__stable_tools//:rust_std-aarch64-linux-android",
-        "@rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools//:rust_dylib_std-x86_64-unknown-linux-gnu",
+        "@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_dylib_std-x86_64-linux-android",
     ],
 )
 
@@ -50,9 +43,8 @@ android_binary(
     manifest = "AndroidManifest.xml",
     deps = [
         ":android_main",
-        # ":libstd_so",
     ] + select({
-        # "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
+        "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
         "//conditions:default": [],
     }),
 )

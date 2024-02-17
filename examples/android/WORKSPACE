@@ -22,12 +22,41 @@ rust_register_toolchains(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-http_archive(
-    name = "build_bazel_rules_android",
-    sha256 = "cd06d15dd8bb59926e4d65f9003bfc20f9da4b2519985c27e190cddc8b7a7806",
-    strip_prefix = "rules_android-0.1.1",
-    urls = ["https://github.com/bazelbuild/rules_android/archive/v0.1.1.zip"],
+new_local_repository(
+    name = "androidstudio",
+    build_file = "//:androidstudio.BUILD",
+    path = "/usr/local/google/home/vinhdaitran/android-studio",
 )
+
+local_repository(
+    name = "rules_android",
+    path = "/usr/local/google/home/vinhdaitran/bazelbuild/rules_android",  # rules_android's WORKSPACE relative to this inner workspace
+)
+
+load("@rules_android//:prereqs.bzl", "rules_android_prereqs")
+
+rules_android_prereqs()
+
+load("@rules_android//:defs.bzl", "rules_android_workspace")
+
+rules_android_workspace()
+
+load("@rules_android//rules:rules.bzl", "android_sdk_repository")
+
+android_sdk_repository(
+    name = "androidsdk",
+)
+
+register_toolchains(
+    "@rules_android//toolchains/android:android_default_toolchain",
+    "@rules_android//toolchains/android_sdk:android_sdk_tools",
+)
+# http_archive(
+#     name = "rules_android",
+#     sha256 = "cd06d15dd8bb59926e4d65f9003bfc20f9da4b2519985c27e190cddc8b7a7806",
+#     strip_prefix = "rules_android-0.1.1",
+#     urls = ["https://github.com/bazelbuild/rules_android/archive/v0.1.1.zip"],
+# )
 
 http_archive(
     name = "bazelci_rules",
@@ -46,10 +75,6 @@ rbe_preconfig(
     toolchain = "ubuntu1804-bazel-java11",
 )
 
-android_sdk_repository(
-    name = "androidsdk",
-)
-
 http_archive(
     name = "rules_android_ndk",
     sha256 = "b1a5ddd784e6ed915c2035c0db536a278b5f50c64412128c06877115991391ef",
@@ -61,4 +86,8 @@ load("@rules_android_ndk//:rules.bzl", "android_ndk_repository")
 
 android_ndk_repository(
     name = "androidndk",
+    api_level = 31,
+    path = "/usr/local/google/home/vinhdaitran/Android/Sdk/ndk/26.1.10909125",
 )
+
+register_toolchains("@androidndk//:all")

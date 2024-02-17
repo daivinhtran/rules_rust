@@ -1564,7 +1564,7 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
         return []
 
     # Only generate CcInfo for particular crate types
-    if crate_info.type not in ("staticlib", "cdylib", "rlib", "lib"):
+    if crate_info.type not in ("staticlib", "cdylib", "rlib", "lib", "dylib"):
         return []
 
     # TODO: Remove after some resolution to
@@ -1596,7 +1596,7 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
             # TODO(hlopko): handle PIC/NOPIC correctly
             pic_static_library = dot_a,
         )
-    elif crate_info.type == "cdylib":
+    elif crate_info.type in ("cdylib", "dylib"):
         library_to_link = cc_common.create_library_to_link(
             actions = ctx.actions,
             feature_configuration = feature_configuration,
