@@ -889,23 +889,6 @@ def construct_arguments(
     if out_dir != None:
         env["OUT_DIR"] = "${pwd}/" + out_dir
 
-    # Handle that the binary name and crate name may be different.
-    #
-    # If a target name contains a - then cargo (and rules_rust) will generate a
-    # crate name with _ instead.  Accordingly, rustc will generate a output
-    # file (executable, or rlib, or whatever) with _ not -.  But when cargo
-    # puts a binary in the target/${config} directory, and sets environment
-    # variables like `CARGO_BIN_EXE_${binary_name}` it will use the - version
-    # not the _ version.  So we rename the rustc-generated file (with _s) to
-    # have -s if needed.
-    emit_with_paths = emit
-    if crate_info.type == "bin" and crate_info.output != None:
-        generated_file = crate_info.name + toolchain.binary_ext
-        src = "/".join([crate_info.output.dirname, generated_file])
-        dst = crate_info.output.path
-        if src != dst:
-            emit_with_paths = [("link=" + dst if val == "link" else val) for val in emit]
-
     # Arguments for launching rustc from the process wrapper
     rustc_path = ctx.actions.args()
     rustc_path.add("--")
@@ -974,8 +957,15 @@ def construct_arguments(
     if remap_path_prefix != None:
         rustc_flags.add("--remap-path-prefix=${{pwd}}={}".format(remap_path_prefix))
 
-    if emit:
-        rustc_flags.add_joined(emit_with_paths, format_joined = "--emit=%s", join_with = ",")
+    emit_without_paths = []
+    for kind in emit:
+        if kind == "link" and crate_info.type == "bin" and crate_info.output != None:
+            rustc_flags.add(crate_info.output, format = "--emit=link=%s")
+        else:
+            emit_without_paths.append(kind)
+
+    if emit_without_paths:
+        rustc_flags.add_joined(emit_without_paths, format_joined = "--emit=%s", join_with = ",")
     if error_format != "json":
         # Color is not compatible with json output.
         rustc_flags.add("--color=always")
