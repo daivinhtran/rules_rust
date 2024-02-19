@@ -2,3 +2,6 @@
 // This is a workaround until
 // https://github.com/bazelbuild/rules_rust/issues/2499
 // is fixed
+fn main() {
+    println!("Hello world");
+}

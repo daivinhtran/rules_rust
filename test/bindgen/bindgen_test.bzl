@@ -8,7 +8,7 @@ load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
 def _test_cc_linkopt_impl(env, target):
     # Assert
     env.expect.that_action(target.actions[0]) \
-        .contains_at_least_args(["--codegen=link-arg=-framework"])
+        .contains_at_least_args(["--codegen=link-arg=-shared"])
 
 def _test_cc_linkopt(name):
     # Arrange
@@ -16,7 +16,7 @@ def _test_cc_linkopt(name):
         name = name + "_cc",
         srcs = ["simple.cc"],
         hdrs = ["simple.h"],
-        linkopts = ["-framework"],
+        linkopts = ["-shared"],
         tags = ["manual"],
     )
     rust_bindgen_library(
