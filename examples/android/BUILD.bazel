@@ -33,8 +33,8 @@ android_library(
 cc_library(
     name = "rust_std_dylib",
     srcs = select({
-        "@rules_rust//rust/platform:aarch64-linux-android": ["@rust_linux_x86_64__aarch64-linux-android__stable_tools//:rust_dylib_std-aarch64-linux-android"],
-        "@rules_rust//rust/platform:x86_64-linux-android": ["@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_dylib_std-x86_64-linux-android"],
+        "@rules_rust//rust/platform:aarch64-linux-android": ["@rust_linux_x86_64__aarch64-linux-android__stable_tools//:rust_std_dylib-aarch64-linux-android"],
+        "@rules_rust//rust/platform:x86_64-linux-android": ["@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_std_dylib-x86_64-linux-android"],
         "//conditions:default": [],
     }),
 )
