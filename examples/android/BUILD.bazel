@@ -31,10 +31,12 @@ android_library(
 )
 
 cc_library(
-    name = "libstd_so",
-    srcs = [
-        "@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_dylib_std-x86_64-linux-android",
-    ],
+    name = "rust_std_dylib",
+    srcs = select({
+        "@rules_rust//rust/platform:aarch64-linux-android": ["@rust_linux_x86_64__aarch64-linux-android__stable_tools//:rust_dylib_std-aarch64-linux-android"],
+        "@rules_rust//rust/platform:x86_64-linux-android": ["@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_dylib_std-x86_64-linux-android"],
+        "//conditions:default": [],
+    }),
 )
 
 android_binary(
@@ -44,7 +46,7 @@ android_binary(
     deps = [
         ":android_main",
     ] + select({
-        "@rules_rust//rust/settings:std_dylib_enabled": [":libstd_so"],
+        "@rules_rust//rust/settings:dylib_linkage_enabled": [":rust_std_dylib"],
         "//conditions:default": [],
     }),
 )

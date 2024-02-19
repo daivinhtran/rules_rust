@@ -25,3 +25,5 @@ mobile-install --mode=skylark --mobile_install_aspect=@rules_android//mobile_ins
 mobile-install --tool_java_runtime_version=17
 common  --experimental_google_legacy_api
 common --experimental_enable_android_migration_apis
+
+build:dylib_linkage --@rules_rust//rust/settings:experimental_use_dylib_linkage

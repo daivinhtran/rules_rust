@@ -101,14 +101,14 @@ incompatible_flag(
 
 # A flag to control whether to link libstd dynamically.
 bool_flag(
-    name = "std_dylib",
+    name = "experimental_use_dylib_linkage",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "std_dylib_enabled",
+    name = "dylib_linkage_enabled",
     flag_values = {
-        ":std_dylib": "True",
+        ":experimental_use_dylib_linkage": "True",
     },
 )
 

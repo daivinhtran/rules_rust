@@ -700,7 +700,7 @@ def _rust_toolchain_impl(ctx):
 
 def _should_link_std_dylib(ctx):
     return not is_exec_configuration(ctx) and \
-           ctx.attr.link_std_dylib[BuildSettingInfo].value and \
+           ctx.attr.experimental_use_dylib_linkage[BuildSettingInfo].value and \
            ctx.attr.rust_std[rust_common.stdlib_info].std_dylib
 
 rust_toolchain = rule(
@@ -757,6 +757,10 @@ rust_toolchain = rule(
             default = Label("//rust/settings:experimental_use_cc_common_link"),
             doc = "Label to a boolean build setting that controls whether cc_common.link is used to link rust binaries.",
         ),
+        "experimental_use_dylib_linkage": attr.label(
+            default = Label("@rules_rust//rust/settings:experimental_use_dylib_linkage"),
+            doc = "Label to a boolean build setting that controls whether whether to link libstd dynamically.",
+        ),
         "extra_exec_rustc_flags": attr.string_list(
             doc = "Extra flags to pass to rustc in exec configuration",
         ),
@@ -766,10 +770,6 @@ rust_toolchain = rule(
         "global_allocator_library": attr.label(
             doc = "Target that provides allocator functions for when a global allocator is present.",
             default = "@rules_rust//ffi/cc/global_allocator_library",
-        ),
-        "link_std_dylib": attr.label(
-            default = Label("@rules_rust//rust/settings:std_dylib"),
-            doc = "Label to a boolean build setting that controls whether whether to link libstd dynamically.",
         ),
         "llvm_cov": attr.label(
             doc = "The location of the `llvm-cov` binary. Can be a direct source or a filegroup containing one item. If None, rust code is not instrumented for coverage.",
