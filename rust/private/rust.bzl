@@ -161,9 +161,6 @@ def _rust_library_common(ctx, crate_type):
     else:
         output_hash = determine_output_hash(crate_root, ctx.label)
 
-    if toolchain._experimental_use_dylib_linkage:
-        crate_type = "dylib"
-
     rust_lib_name = determine_lib_name(
         crate_name,
         crate_type,

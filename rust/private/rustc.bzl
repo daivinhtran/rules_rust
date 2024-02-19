@@ -1725,8 +1725,11 @@ def _compute_rpaths(toolchain, output_dir, dep_info, use_pic):
         if _is_dylib(lib)
     ]
 
-    # Include std dylib if linking std dynamically
+    # Include std dylib if dylib linkage is enabled
     if toolchain._experimental_use_dylib_linkage:
+        # TODO: Make toolchain.rust_std to only include libstd.so
+        # When dylib linkage is enabled, toolchain.rust_std should only need to
+        # include libstd.so. Hence, no filtering needed.
         for file in toolchain.rust_std.to_list():
             if is_std_dylib(file):
                 dylibs.append(file)

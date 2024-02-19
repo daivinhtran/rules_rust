@@ -30,27 +30,11 @@ android_library(
     deps = [":jni_shim"],
 )
 
-cc_library(
-    name = "rust_std_dylib",
-    srcs = select({
-        "@rules_rust//rust/platform:aarch64-linux-android": ["@rust_linux_x86_64__aarch64-linux-android__stable_tools//:rust_std_dylib-aarch64-linux-android"],
-        "@rules_rust//rust/platform:x86_64-linux-android": ["@rust_linux_x86_64__x86_64-linux-android__stable_tools//:rust_std_dylib-x86_64-linux-android"],
-        "//conditions:default": [],
-    }),
-)
-
 android_binary(
     name = "android_app",
     custom_package = "com.example.androidapp",
     manifest = "AndroidManifest.xml",
-    deps = [
-        ":android_main",
-    ] + select({
-        # Intentionally, rust_std_dylib is explicitly included here to prevent
-        # android apps from depending on libstd.so unintentionally
-        "@rules_rust//rust/settings:dylib_linkage_enabled": [":rust_std_dylib"],
-        "//conditions:default": [],
-    }),
+    deps = [":android_main"],
 )
 
 platform(

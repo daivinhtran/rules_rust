@@ -248,7 +248,7 @@ def _make_libstd_and_allocator_ccinfo(ctx, rust_std, allocator_library, std = "s
             order = "topological",
         )
 
-        if _experimental_use_cc_common_link(ctx) and _experimental_use_dylib_linkage(ctx):
+        if _experimental_use_dylib_linkage(ctx):
             # std dylib has everything so that we do not need to include all std_files
             std_inputs = depset(
                 [cc_common.create_library_to_link(
