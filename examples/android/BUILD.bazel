@@ -46,6 +46,8 @@ android_binary(
     deps = [
         ":android_main",
     ] + select({
+        # Intentionally, rust_std_dylib is explicitly included here to prevent
+        # android apps from depending on libstd.so unintentionally
         "@rules_rust//rust/settings:dylib_linkage_enabled": [":rust_std_dylib"],
         "//conditions:default": [],
     }),

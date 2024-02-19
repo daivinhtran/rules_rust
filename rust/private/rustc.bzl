@@ -1031,7 +1031,7 @@ def construct_arguments(
         rustc_flags.add("--codegen=instrument-coverage")
 
     # --codegen=prefer-dynamic
-    if toolchain.link_std_dylib:
+    if toolchain._experimental_use_dylib_linkage:
         rustc_flags.add("--codegen=prefer-dynamic")
 
     # Make bin crate data deps available to tests.
@@ -1619,6 +1619,7 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
 
     cc_infos = [
         CcInfo(linking_context = linking_context),
+        toolchain.stdlib_linkflags,
         # Don't include toolchain.stdlib_linkflags here because it can contains
         # libstd.so which can impact the size of downstream binaries or shared libraries
     ]
@@ -1725,7 +1726,7 @@ def _compute_rpaths(toolchain, output_dir, dep_info, use_pic):
     ]
 
     # Include std dylib if linking std dynamically
-    if toolchain.link_std_dylib:
+    if toolchain._experimental_use_dylib_linkage:
         for file in toolchain.rust_std.to_list():
             if is_std_dylib(file):
                 dylibs.append(file)

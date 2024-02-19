@@ -61,8 +61,6 @@ load("@rules_android_ndk//:rules.bzl", "android_ndk_repository")
 
 android_ndk_repository(
     name = "androidndk",
-    api_level = 31,
-    path = "/usr/local/google/home/vinhdaitran/Android/Sdk/ndk/26.1.10909125",
 )
 
 register_toolchains("@androidndk//:all")
