@@ -1030,7 +1030,6 @@ def construct_arguments(
         # https://doc.rust-lang.org/rustc/instrument-coverage.html
         rustc_flags.add("--codegen=instrument-coverage")
 
-    # --codegen=prefer-dynamic
     if toolchain._experimental_use_dylib_linkage:
         rustc_flags.add("--codegen=prefer-dynamic")
 
@@ -1564,7 +1563,7 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
         return []
 
     # Only generate CcInfo for particular crate types
-    if crate_info.type not in ("staticlib", "cdylib", "rlib", "lib", "dylib"):
+    if crate_info.type not in ("staticlib", "cdylib", "rlib", "lib"):
         return []
 
     # TODO: Remove after some resolution to
@@ -1596,7 +1595,7 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
             # TODO(hlopko): handle PIC/NOPIC correctly
             pic_static_library = dot_a,
         )
-    elif crate_info.type in ("cdylib", "dylib"):
+    elif crate_info.type == "cdylib":
         library_to_link = cc_common.create_library_to_link(
             actions = ctx.actions,
             feature_configuration = feature_configuration,
@@ -1620,8 +1619,6 @@ def establish_cc_info(ctx, attr, crate_info, toolchain, cc_toolchain, feature_co
     cc_infos = [
         CcInfo(linking_context = linking_context),
         toolchain.stdlib_linkflags,
-        # Don't include toolchain.stdlib_linkflags here because it can contains
-        # libstd.so which can impact the size of downstream binaries or shared libraries
     ]
 
     # Flattening is okay since crate_info.deps only records direct deps.

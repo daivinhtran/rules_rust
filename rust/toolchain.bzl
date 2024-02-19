@@ -545,7 +545,6 @@ def _rust_toolchain_impl(ctx):
             cc_common.create_linker_input(
                 owner = ctx.label,
                 user_link_flags = depset(expanded_stdlib_linkflags),
-                # libraries = depset([std_dylib]),
             ),
         ]),
     )
