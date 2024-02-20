@@ -247,7 +247,7 @@ def _make_libstd_and_allocator_ccinfo(ctx, rust_std, allocator_library, std = "s
             transitive = [memchr_inputs],
             order = "topological",
         )
-
+        print(_experimental_link_std_dylib(ctx))
         if _experimental_link_std_dylib(ctx):
             # std dylib has everything so that we do not need to include all std_files
             std_inputs = depset(
@@ -679,9 +679,10 @@ def _rust_toolchain_impl(ctx):
     ]
 
 def _experimental_link_std_dylib(ctx):
+    print(ctx.attr.experimental_link_std_dylib[BuildSettingInfo])
     return not is_exec_configuration(ctx) and \
            ctx.attr.experimental_link_std_dylib[BuildSettingInfo].value and \
-           ctx.attr.rust_std[rust_common.stdlib_info].std_dylib
+           ctx.attr.rust_std[rust_common.stdlib_info].std_dylib != None
 
 rust_toolchain = rule(
     implementation = _rust_toolchain_impl,
