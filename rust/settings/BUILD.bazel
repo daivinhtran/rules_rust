@@ -101,15 +101,8 @@ incompatible_flag(
 
 # A flag to control whether to link libstd dynamically.
 bool_flag(
-    name = "experimental_use_dylib_linkage",
+    name = "experimental_link_std_dylib",
     build_setting_default = False,
-)
-
-config_setting(
-    name = "dylib_linkage_enabled",
-    flag_values = {
-        ":experimental_use_dylib_linkage": "True",
-    },
 )
 
 # A flag to remove the SYSROOT environment variable from `Rustc` actions.

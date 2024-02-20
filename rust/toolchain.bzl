@@ -248,7 +248,7 @@ def _make_libstd_and_allocator_ccinfo(ctx, rust_std, allocator_library, std = "s
             order = "topological",
         )
 
-        if _experimental_use_dylib_linkage(ctx):
+        if _experimental_link_std_dylib(ctx):
             # std dylib has everything so that we do not need to include all std_files
             std_inputs = depset(
                 [cc_common.create_library_to_link(
@@ -664,8 +664,8 @@ def _rust_toolchain_impl(ctx):
         _rename_first_party_crates = rename_first_party_crates,
         _third_party_dir = third_party_dir,
         _pipelined_compilation = pipelined_compilation,
+        _experimental_link_std_dylib = _experimental_link_std_dylib(ctx),
         _experimental_use_cc_common_link = _experimental_use_cc_common_link(ctx),
-        _experimental_use_dylib_linkage = _experimental_use_dylib_linkage(ctx),
         _experimental_use_global_allocator = experimental_use_global_allocator,
         _experimental_use_coverage_metadata_files = ctx.attr._experimental_use_coverage_metadata_files[BuildSettingInfo].value,
         _experimental_toolchain_generated_sysroot = ctx.attr._experimental_toolchain_generated_sysroot[IncompatibleFlagInfo].enabled,
@@ -678,9 +678,9 @@ def _rust_toolchain_impl(ctx):
         make_variable_info,
     ]
 
-def _experimental_use_dylib_linkage(ctx):
+def _experimental_link_std_dylib(ctx):
     return not is_exec_configuration(ctx) and \
-           ctx.attr.experimental_use_dylib_linkage[BuildSettingInfo].value and \
+           ctx.attr.experimental_link_std_dylib[BuildSettingInfo].value and \
            ctx.attr.rust_std[rust_common.stdlib_info].std_dylib
 
 rust_toolchain = rule(
@@ -733,13 +733,13 @@ rust_toolchain = rule(
             ),
             mandatory = True,
         ),
+        "experimental_link_std_dylib": attr.label(
+            default = Label("@rules_rust//rust/settings:experimental_link_std_dylib"),
+            doc = "Label to a boolean build setting that controls whether whether to link libstd dynamically.",
+        ),
         "experimental_use_cc_common_link": attr.label(
             default = Label("//rust/settings:experimental_use_cc_common_link"),
             doc = "Label to a boolean build setting that controls whether cc_common.link is used to link rust binaries.",
-        ),
-        "experimental_use_dylib_linkage": attr.label(
-            default = Label("@rules_rust//rust/settings:experimental_use_dylib_linkage"),
-            doc = "Label to a boolean build setting that controls whether whether to link libstd dynamically.",
         ),
         "extra_exec_rustc_flags": attr.string_list(
             doc = "Extra flags to pass to rustc in exec configuration",

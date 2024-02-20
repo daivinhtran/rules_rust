@@ -1030,7 +1030,7 @@ def construct_arguments(
         # https://doc.rust-lang.org/rustc/instrument-coverage.html
         rustc_flags.add("--codegen=instrument-coverage")
 
-    if toolchain._experimental_use_dylib_linkage:
+    if toolchain._experimental_link_std_dylib:
         rustc_flags.add("--codegen=prefer-dynamic")
 
     # Make bin crate data deps available to tests.
@@ -1723,7 +1723,7 @@ def _compute_rpaths(toolchain, output_dir, dep_info, use_pic):
     ]
 
     # Include std dylib if dylib linkage is enabled
-    if toolchain._experimental_use_dylib_linkage:
+    if toolchain._experimental_link_std_dylib:
         # TODO: Make toolchain.rust_std to only include libstd.so
         # When dylib linkage is enabled, toolchain.rust_std should only need to
         # include libstd.so. Hence, no filtering needed.
