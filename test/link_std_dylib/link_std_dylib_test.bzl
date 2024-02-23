@@ -1,9 +1,8 @@
-load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
-load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
-load("@rules_testing//lib:truth.bzl", "subjects")
-load("@rules_testing//tests:test_util.bzl", "test_util")
+"""Analysis tests for experimental_link_std_dylib flag"""
 
 load("@rules_cc//cc:defs.bzl", "CcInfo")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
 
 def _test_rust_binary_impl(env, targets):
     output = "test/link_std_dylib/test_rust_binary_rust_binary"
