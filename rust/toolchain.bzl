@@ -15,8 +15,8 @@ load(
     "dedup_expand_location",
     "find_cc_toolchain",
     "is_exec_configuration",
-    "make_static_lib_symlink",
     "is_std_dylib",
+    "make_static_lib_symlink",
 )
 load("//rust/settings:incompatible.bzl", "IncompatibleFlagInfo")
 
