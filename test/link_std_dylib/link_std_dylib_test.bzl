@@ -3,6 +3,8 @@
 load("@rules_cc//cc:defs.bzl", "CcInfo")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
+
+# buildifier: disable=bzl-visibility
 load("//rust/private:utils.bzl", "is_std_dylib")
 
 def _test_rust_binary_impl(env, targets):
