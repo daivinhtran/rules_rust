@@ -20,8 +20,10 @@ build:android_x86_64 --cpu=x86_64
 build:android_x86_64 --fat_apk_cpu=x86_64
 build:android_x86_64 --android_platforms=//:x86_64
 
-
 common  --experimental_google_legacy_api
 common --experimental_enable_android_migration_apis
 
 build:dylib_linkage --@rules_rust//rust/settings:experimental_link_std_dylib
+
+# This isn't currently the defaut in Bazel, but we enable it to test we'll be ready if/when it flips.
+build --incompatible_disallow_empty_glob
