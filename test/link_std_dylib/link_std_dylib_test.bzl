@@ -7,8 +7,7 @@ load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
 def _test_rust_binary_impl(env, targets):
     output = "test/link_std_dylib/test_rust_binary_rust_binary"
 
-    env.expect.that_target(targets.default_binary) \
-        .action_generating(output) \
+    env.expect.that_action(targets.default_binary.actions[0]) \
         .contains_none_of_flag_values([
             ("--codegen", "prefer-dynamic"),
             (
@@ -20,8 +19,7 @@ def _test_rust_binary_impl(env, targets):
     # Make sure with @rules_rust//rust/settings:experimental_link_std_dylib,
     # the linker flags are set up correct so that the binary dynamically links
     # the stdlib
-    env.expect.that_target(targets.binary_with_std_dylib) \
-        .action_generating(output) \
+    env.expect.that_action(targets.binary_with_std_dylib.actions[0]) \
         .contains_flag_values([
             ("--codegen", "prefer-dynamic"),
             (
