@@ -16,6 +16,7 @@ load(
     "find_cc_toolchain",
     "is_exec_configuration",
     "make_static_lib_symlink",
+    "is_std_dylib",
 )
 load("//rust/settings:incompatible.bzl", "IncompatibleFlagInfo")
 
@@ -79,8 +80,7 @@ def _rust_stdlib_filegroup_impl(ctx):
     std_dylib = None
 
     for file in rust_std:
-        # find libstd-*.so
-        if file.basename.startswith("libstd-") and file.basename.endswith(".so"):
+        if is_std_dylib(file):
             std_dylib = file
             break
 
