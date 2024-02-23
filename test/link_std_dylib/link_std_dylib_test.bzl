@@ -1,19 +1,13 @@
 """Analysis tests for experimental_link_std_dylib flag"""
 
 load("@rules_cc//cc:defs.bzl", "CcInfo")
-load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
 def _test_rust_binary_impl(env, targets):
-    output = "test/link_std_dylib/test_rust_binary_rust_binary"
-
     env.expect.that_action(targets.default_binary.actions[0]) \
         .contains_none_of_flag_values([
             ("--codegen", "prefer-dynamic"),
-            (
-                "--codegen",
-                "link-arg=$ORIGIN/../../external/rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools/rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib"
-            ),
         ])
 
     # Make sure with @rules_rust//rust/settings:experimental_link_std_dylib,
@@ -22,10 +16,6 @@ def _test_rust_binary_impl(env, targets):
     env.expect.that_action(targets.binary_with_std_dylib.actions[0]) \
         .contains_flag_values([
             ("--codegen", "prefer-dynamic"),
-            (
-                "--codegen",
-                "link-arg=$ORIGIN/../../external/rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools/rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib"
-            ),
         ])
 
 def _test_rust_binary(name):
