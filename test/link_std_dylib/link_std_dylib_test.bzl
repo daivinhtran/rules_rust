@@ -3,20 +3,21 @@
 load("@rules_cc//cc:defs.bzl", "CcInfo")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
+load("//rust/private:utils.bzl", "is_std_dylib")
 
 def _test_rust_binary_impl(env, targets):
     env.expect.that_action(targets.default_binary.actions[0]) \
         .contains_none_of_flag_values([
-            ("--codegen", "prefer-dynamic"),
-        ])
+        ("--codegen", "prefer-dynamic"),
+    ])
 
     # Make sure with @rules_rust//rust/settings:experimental_link_std_dylib,
     # the linker flags are set up correct so that the binary dynamically links
     # the stdlib
     env.expect.that_action(targets.binary_with_std_dylib.actions[0]) \
         .contains_flag_values([
-            ("--codegen", "prefer-dynamic"),
-        ])
+        ("--codegen", "prefer-dynamic"),
+    ])
 
 def _test_rust_binary(name):
     rust_binary(
@@ -37,9 +38,9 @@ def _test_rust_binary(name):
             "binary_with_std_dylib": {
                 "@config_settings": {
                     str(Label("@rules_rust//rust/settings:experimental_link_std_dylib")): True,
-                }
-            }
-        }
+                },
+            },
+        },
     )
 
 def _export_static_stdlibs_in_cc_info(target):
@@ -57,8 +58,7 @@ def _export_libstd_dylib_in_cc_info(target):
     for linker_input in linker_inputs.to_list():
         for library in linker_input.libraries:
             if hasattr(library, "dynamic_library") and library.dynamic_library != None:
-                basename = library.dynamic_library.basename
-                if basename.startswith("libstd") and basename.endswith(".so"):
+                if is_std_dylib(library.dynamic_library):
                     return True
     return False
 
@@ -101,8 +101,8 @@ def _test_rust_library(name):
             "rlib_with_std_dylib": {
                 "@config_settings": {
                     str(Label("@rules_rust//rust/settings:experimental_link_std_dylib")): True,
-                }
-            }
+                },
+            },
         },
     )
 
