@@ -1,8 +1,8 @@
 """Analysis tests for experimental_link_std_dylib flag"""
 
 load("@rules_cc//cc:defs.bzl", "CcInfo")
-load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("@rules_testing//lib:analysis_test.bzl", "analysis_test", "test_suite")
 
 def _test_rust_binary_impl(env, targets):
     env.expect.that_action(targets.default_binary.actions[0]) \
@@ -30,8 +30,8 @@ def _test_rust_binary(name):
         name = name,
         impl = _test_rust_binary_impl,
         targets = {
-            "default_binary": name + "_rust_binary",
             "binary_with_std_dylib": name + "_rust_binary",
+            "default_binary": name + "_rust_binary",
         },
         attrs = {
             "binary_with_std_dylib": {

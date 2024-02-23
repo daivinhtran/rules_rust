@@ -884,5 +884,6 @@ def is_std_dylib(file):
     return basename.startswith("libstd-") and \
      ( \
         basename.endswith(".so") or \
-        basename.endswith(".dylib")\
+        basename.endswith(".dylib") or \
+        basename.endswith(".dll")
      )
