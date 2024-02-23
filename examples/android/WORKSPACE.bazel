@@ -16,11 +16,17 @@ rust_register_toolchains(
     edition = "2018",
     extra_target_triples = [
         "aarch64-linux-android",
-        "x86_64-linux-android",
     ],
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "build_bazel_rules_android",
+    sha256 = "cd06d15dd8bb59926e4d65f9003bfc20f9da4b2519985c27e190cddc8b7a7806",
+    strip_prefix = "rules_android-0.1.1",
+    urls = ["https://github.com/bazelbuild/rules_android/archive/v0.1.1.zip"],
+)
 
 http_archive(
     name = "bazelci_rules",
@@ -39,13 +45,6 @@ rbe_preconfig(
     toolchain = "ubuntu1804-bazel-java11",
 )
 
-http_archive(
-    name = "rules_android",
-    sha256 = "cd06d15dd8bb59926e4d65f9003bfc20f9da4b2519985c27e190cddc8b7a7806",
-    strip_prefix = "rules_android-0.1.1",
-    urls = ["https://github.com/bazelbuild/rules_android/archive/v0.1.1.zip"],
-)
-
 android_sdk_repository(
     name = "androidsdk",
 )
@@ -62,5 +61,3 @@ load("@rules_android_ndk//:rules.bzl", "android_ndk_repository")
 android_ndk_repository(
     name = "androidndk",
 )
-
-register_toolchains("@androidndk//:all")
